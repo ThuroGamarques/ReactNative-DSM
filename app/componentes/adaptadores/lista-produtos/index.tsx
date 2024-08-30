@@ -1,18 +1,25 @@
-import {ScrollView, View} from "react-native";
-import ItemProduto from "../item-produto"
-import style from "@/app/style/default"
+import { ScrollView, View } from "react-native";
+import ItemProduto from "../item-produto";
+import style from "@/app/style/default";
 
-function ListaProdutos({produtos}:
-    {produtos: [id:number, nome:string, preco:number]})
-{
-    return (
+// Define o tipo para o produto
+type Produto = {
+  id: number;
+  nome: string;
+  preco: number;
+};
+
+// Corrige o tipo de produtos para ser um array de objetos Produto
+function ListaProdutos({ produtos }: { produtos: Produto[] }) {
+  return (
     <ScrollView>
-    <View>
-        {produtos.map((p) => 
-        <ItemProduto produto={p} key={p.id}>
-
-        </ItemProduto>)}
-    </View>
+      <View>
+        {produtos.map((p) => (
+          <ItemProduto produto={p} key={p.id} />
+        ))}
+      </View>
     </ScrollView>
-    )
+  );
 }
+
+export default ListaProdutos;

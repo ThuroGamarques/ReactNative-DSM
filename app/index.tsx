@@ -1,16 +1,22 @@
 import { useState } from "react";
 import { Text, View, StyleSheet, Button } from "react-native";
 
-const produtos = [
-  {id: 1, nome: "Coca-cola", preco: 12.5},
-  {id: 2, nome: "Pepsi", preco: 8.88},
-  {id: 3, nome: "Fanta", preco: 8.95},
-  {id: 4, nome: "Guaraná", preco: 6.5},
-];
-
 export default function Index()
 {
   let [contador, setContador] = useState(0);
+  let [produtos, setProdutos] = useState(1);
+
+  // const produtos = [
+    // {id: 1, nome: "Coca-cola", preco: 12.5},
+    // {id: 2, nome: "Pepsi", preco: 8.88},
+    // {id: 3, nome: "Fanta", preco: 8.95},
+    // {id: 4, nome: "Guaraná", preco: 6.5},
+  // ];
+
+  function carregarProdutos()
+  {
+    
+  }
 
   return (
     <View style={main.view}>
