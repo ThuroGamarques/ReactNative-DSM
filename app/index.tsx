@@ -19,7 +19,7 @@ export default function Index()
 	// {id: 3, nome: "Fanta", preco: 8.95},
 	// {id: 4, nome: "Guaraná", preco: 6.5},
 	// ];
-
+ 
 	function carregarProdutos()
 	{
 		axios.get('https://app-api-tapwm.onrender.com/api/produtos').then((resp) =>
@@ -61,10 +61,18 @@ const main = StyleSheet.create(
 		fontSize: 50,
 		fontWeight: "bold"
 	},
-	titulo: {
+	titulo:
+	{
 		color: '#FFFFFF',
 		fontSize: 30,
 		textAlign: "left",
 		fontWeight: "bold"
+	},
+	card:
+	{
+		width:200,
+		height:200,
+		backgroundColor:"#AAA",
+		
 	}
 });
