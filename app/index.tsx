@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Text, View, StyleSheet, Button } from "react-native";
+import { CadastroProduto } from "@/app/componentes/adaptadores/cadastro-produto";
 import axios from 'axios'
-import { useEffect} from 'react'
 
 export default function Index()
 {
@@ -12,13 +12,6 @@ export default function Index()
 	{
 		carregarProdutos();
 	}, []);
-
-	// const produtos = [
-	// {id: 1, nome: "Coca-cola", preco: 12.5},
-	// {id: 2, nome: "Pepsi", preco: 8.88},
-	// {id: 3, nome: "Fanta", preco: 8.95},
-	// {id: 4, nome: "Guaraná", preco: 6.5},
-	// ];
  
 	function carregarProdutos()
 	{
@@ -37,6 +30,8 @@ export default function Index()
 				</View>
 			))}
 			<Button title={contador.toString()} onPress={() => { clicarBotao() }}></Button>
+
+			<CadastroProduto/>
 		</View>
 	);
 
@@ -73,6 +68,6 @@ const main = StyleSheet.create(
 		width:200,
 		height:200,
 		backgroundColor:"#AAA",
-		
+
 	}
 });
