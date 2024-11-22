@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, StyleSheet, TouchableOpacity, FlatList, Dimensions } from "react-native";
+import { Text, View, StyleSheet, TouchableOpacity, FlatList, Dimensions, ScrollView } from "react-native";
 import axios from "axios";
 import Icon from "react-native-vector-icons/FontAwesome";
 
 export default function Index() {
   const [contador, setContador] = useState(0);
   const [produtos, setProdutos] = useState([]);
+  const [carrinho, setCarrinho] = useState([]);
 
   const windowWidth = Dimensions.get('window').width;
 
@@ -26,9 +27,31 @@ export default function Index() {
       });
   }
 
-  function addToCart() {
-    setContador(contador + 1);
+  function addToCart(item) {
+    setCarrinho((prevCarrinho) => {
+      const updatedCarrinho = [...prevCarrinho];
+      const index = updatedCarrinho.findIndex((produto) => produto.id === item.id);
+
+      if (index >= 0) {
+        updatedCarrinho[index].quantidade += 1;
+      } else {
+        updatedCarrinho.push({ ...item, quantidade: 1 });
+      }
+      
+      return updatedCarrinho;
+    });
   }
+
+  const getCarrinhoDetails = () => {
+    const totalQuantity = carrinho.reduce((total, item) => total + item.quantidade, 0);
+    const totalPrice = carrinho.reduce((total, item) => total + item.preco * item.quantidade, 0);
+    
+    return { totalQuantity, totalPrice };
+  };
+
+  const formatPrice = (price) => {
+    return price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  };
 
   return (
     <View style={mainStyle.view}>
@@ -43,8 +66,8 @@ export default function Index() {
         renderItem={({ item }) => (
           <View style={mainStyle.card}>
             <Text style={mainStyle.titl}>{item.nome}</Text>
-            <Text>R$ {item.preco}</Text>
-            <TouchableOpacity style={mainStyle.addButton} onPress={addToCart}>
+            <Text>{formatPrice(item.preco)}</Text>
+            <TouchableOpacity style={mainStyle.addButton} onPress={() => addToCart(item)}>
               <Text style={mainStyle.addButtonText}>Adicionar ao Carrinho</Text>
             </TouchableOpacity>
           </View>
@@ -53,6 +76,30 @@ export default function Index() {
         columnWrapperStyle={mainStyle.cardRow}
         contentContainerStyle={mainStyle.cardContainer}
       />
+
+      <View style={mainStyle.sidebar}>
+        <ScrollView>
+          <Text style={mainStyle.sidebarTitle}>
+            <Icon name="shopping-cart" size={20} color="#644ba3" /> Carrinho
+          </Text>
+          {carrinho.length > 0 ? (
+            carrinho.map((item, index) => (
+              <View key={index} style={mainStyle.cartItem}>
+                <Text style={mainStyle.cartItemName}>{item.nome}</Text>
+                <Text>Quantidade: {item.quantidade}</Text>
+                <Text>{formatPrice(item.preco)}</Text>
+              </View>
+            ))
+          ) : (
+            <Text style={mainStyle.emptyCart}>Carrinho vazio</Text>
+          )}
+
+          <View style={mainStyle.cartSummary}>
+            <Text>Total de Itens: {getCarrinhoDetails().totalQuantity}</Text>
+            <Text>Total: {formatPrice(getCarrinhoDetails().totalPrice)}</Text>
+          </View>
+        </ScrollView>
+      </View>
     </View>
   );
 }
@@ -129,5 +176,43 @@ const mainStyle = StyleSheet.create({
   addButtonText: {
     color: "white",
     fontSize: 16,
+  },
+  sidebar: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    width: 250,
+    backgroundColor: "#fff",
+    height: "100%",
+    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: -4, height: 0 },
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  sidebarTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#644ba3",
+    marginBottom: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  cartItem: {
+    marginBottom: 10,
+  },
+  cartItemName: {
+    fontWeight: 'bold',
+  },
+  emptyCart: {
+    fontStyle: "italic",
+    color: "#888",
+  },
+  cartSummary: {
+    marginTop: 20,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: "#ddd",
   },
 });
