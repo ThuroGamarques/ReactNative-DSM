@@ -4,12 +4,10 @@ import axios from "axios";
 import Icon from "react-native-vector-icons/FontAwesome";
 
 export default function Index() {
-  const [contador, setContador] = useState(0);
   const [produtos, setProdutos] = useState([]);
   const [carrinho, setCarrinho] = useState([]);
 
   const windowWidth = Dimensions.get('window').width;
-
   const numColumns = windowWidth > 600 ? 3 : 2;
 
   useEffect(() => {
@@ -18,7 +16,7 @@ export default function Index() {
 
   function loadprod() {
     axios
-      .get("https://app-api-tapwm.onrender.com/api/produtos")
+      .get("https://mkplace-api-react.onrender.com/produtos") // Alterar para o endpoint correto
       .then((resp) => {
         setProdutos(resp.data);
       })
@@ -28,18 +26,29 @@ export default function Index() {
   }
 
   function addToCart(item) {
-    setCarrinho((prevCarrinho) => {
-      const updatedCarrinho = [...prevCarrinho];
-      const index = updatedCarrinho.findIndex((produto) => produto.id === item.id);
+    axios
+      .post("https://mkplace-api-react.onrender.com/carrinho", {
+        produto_id: item.id,
+        cliente_id: 1,  // Alterar para o id do cliente atual
+        quantidade: 1,
+      })
+      .then((resp) => {
+        setCarrinho((prevCarrinho) => {
+          const updatedCarrinho = [...prevCarrinho];
+          const index = updatedCarrinho.findIndex((produto) => produto.id === item.id);
 
-      if (index >= 0) {
-        updatedCarrinho[index].quantidade += 1;
-      } else {
-        updatedCarrinho.push({ ...item, quantidade: 1 });
-      }
-      
-      return updatedCarrinho;
-    });
+          if (index >= 0) {
+            updatedCarrinho[index].quantidade += 1;
+          } else {
+            updatedCarrinho.push({ ...item, quantidade: 1 });
+          }
+          
+          return updatedCarrinho;
+        });
+      })
+      .catch((error) => {
+        console.error("Erro ao adicionar ao carrinho: ", error);
+      });
   }
 
   const getCarrinhoDetails = () => {
@@ -57,7 +66,7 @@ export default function Index() {
     <View style={mainStyle.view}>
       <TouchableOpacity style={mainStyle.butn} onPress={() => {}}>
         <Icon name="shopping-cart" size={30} color="white" />
-        <Text style={mainStyle.butnText}>{contador}</Text>
+        <Text style={mainStyle.butnText}>{getCarrinhoDetails().totalQuantity}</Text>
       </TouchableOpacity>
 
       <FlatList
@@ -105,36 +114,40 @@ export default function Index() {
 }
 
 const mainStyle = StyleSheet.create({
+  // Container principal
   view: {
     flex: 1,
-    justifyContent: "flex-start",
+    backgroundColor: "#f5f5f5",
     alignItems: "center",
-    backgroundColor: "#e9e6ed",
     paddingTop: 20,
   },
+  
+  // Botão de Carrinho no topo
   butn: {
     position: "absolute",
     top: 10,
     right: 10,
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 5,
-    paddingHorizontal: 7,
     backgroundColor: "#644ba3",
-    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 50,
   },
   butnText: {
     color: "white",
     fontSize: 18,
     marginLeft: 10,
   },
+
+  // Estilos para o FlatList (produtos)
   cardContainer: {
-    justifyContent: 'flex-start',
+    justifyContent: "flex-start",
     paddingBottom: 20,
     paddingHorizontal: 10,
   },
   cardRow: {
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     marginBottom: 15,
   },
   card: {
@@ -146,7 +159,7 @@ const mainStyle = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 10,
-    elevation: 1,
+    elevation: 5,
     justifyContent: "flex-start",
     alignItems: "center",
     borderRadius: 10,
@@ -166,7 +179,7 @@ const mainStyle = StyleSheet.create({
     left: 0,
     width: "100%",
     backgroundColor: "#644ba3",
-    paddingVertical: 10,
+    paddingVertical: 12,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 10,
@@ -177,6 +190,8 @@ const mainStyle = StyleSheet.create({
     color: "white",
     fontSize: 16,
   },
+
+  // Sidebar (Carrinho)
   sidebar: {
     position: "absolute",
     top: 0,
@@ -192,27 +207,44 @@ const mainStyle = StyleSheet.create({
     elevation: 5,
   },
   sidebarTitle: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "bold",
     color: "#644ba3",
     marginBottom: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   cartItem: {
-    marginBottom: 10,
+    marginBottom: 15,
   },
   cartItemName: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
+    fontSize: 16,
   },
   emptyCart: {
     fontStyle: "italic",
     color: "#888",
+    textAlign: "center",
+    marginTop: 30,
   },
+
+  // Resumo do Carrinho
   cartSummary: {
     marginTop: 20,
     paddingTop: 10,
     borderTopWidth: 1,
     borderTopColor: "#ddd",
   },
+  cartSummaryText: {
+    fontSize: 16,
+    marginBottom: 10,
+  },
+
+  // Cartão de Produto (Para mobile)
+  cardContent: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
 });
+
